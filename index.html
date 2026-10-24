@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>PAYMENT MERTA | Scan QRIS</title>
+    
+    <!-- SEO & Open Graph -->
+    <meta name="description" content="Payment Merta - Scan QRIS untuk pembayaran. Kirim bukti transfer ke penjual.">
+    <meta property="og:title" content="Payment Merta">
+    <meta property="og:description" content="Scan QRIS • Kirim Bukti Transfer ke Penjual">
+    <meta property="og:image" content="https://files.catbox.moe/2qmrw0.png">
+    <meta property="og:type" content="website">
+    <meta name="theme-color" content="#87CEEB">
+    
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            padding: 1.5rem 1.2rem 3rem;
+            min-height: 100vh;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            opacity: 0;
+            transition: opacity 0.6s ease;
+        }
+        body.loaded { opacity: 1; }
+
+        .video-background {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            object-fit: cover;
+            z-index: -1;
+            will-change: transform;
+            pointer-events: none;
+        }
+
+        .container {
+            max-width: 640px;
+            margin: 0 auto;
+            background: transparent;
+            border-radius: 56px;
+            padding: 2rem 1.8rem 2.5rem;
+            transition: all 0.3s ease;
+        }
+
+        /* Profile */
+        .profile { text-align: center; margin-bottom: 2rem; }
+        .avatar-link {
+            display: inline-block;
+            cursor: pointer;
+            transition: transform 0.25s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+        }
+        .avatar-link:hover { transform: scale(1.02); }
+        .avatar {
+            width: 120px; height: 120px;
+            object-fit: cover;
+            border-radius: 50%;
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.35);
+            border: 2px solid rgba(135, 206, 235, 0.9);
+            margin-bottom: 0.8rem;
+            background: transparent;
+            transition: all 0.2s;
+        }
+        .store-name {
+            font-family: 'Poppins', sans-serif;
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+            background: linear-gradient(135deg, #87CEEB, #4A90E2);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.4);
+        }
+        .bio {
+            font-size: 0.9rem;
+            background: transparent;
+            display: inline-block;
+            padding: 0.4rem 1.3rem;
+            border-radius: 60px;
+            font-weight: 500;
+            color: #E8F4FD;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.7);
+            border: 1px solid rgba(135, 206, 235, 0.9);
+            margin-top: 0.6rem;
+        }
+
+        /* Links */
+        .links {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin: 2rem 0 2rem;
+        }
+        .link-card {
+            background: transparent;
+            border-radius: 80px;
+            padding: 0.9rem 1.6rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            text-decoration: none;
+            color: #E8F4FD;
+            font-weight: 600;
+            font-size: 1.05rem;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.7);
+            transition: all 0.25s ease;
+            border: 1.5px solid rgba(135, 206, 235, 0.9);
+            cursor: pointer;
+        }
+        .link-card i:first-child {
+            font-size: 1.5rem;
+            width: 36px;
+            color: #87CEEB;
+            text-align: center;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.7);
+        }
+        .link-label {
+            flex: 1;
+            text-align: left;
+            margin-left: 0.6rem;
+            font-weight: 500;
+        }
+        .link-arrow {
+            font-size: 1.1rem;
+            color: #87CEEB;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.7);
+            transition: transform 0.3s ease;
+        }
+        .link-card:hover {
+            background: rgba(135, 206, 235, 0.15);
+            border-color: #4A90E2;
+            transform: translateY(-2px);
+        }
+        .link-card:hover .link-arrow { transform: rotate(90deg); }
+        .link-card:active { transform: scale(0.98); }
+
+        /* Social */
+        .social-section { margin: 2.2rem 0 1.2rem; text-align: center; }
+        .social-title {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            font-weight: 600;
+            color: #B8E1FC;
+            background: transparent;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.7);
+            display: inline-block;
+            padding: 0.25rem 1.2rem;
+            border-radius: 40px;
+            border: 1px solid rgba(135, 206, 235, 0.6);
+        }
+        .social-grid {
+            display: flex;
+            justify-content: center;
+            gap: 2.5rem;
+            flex-wrap: wrap;
+            margin-top: 1.2rem;
+        }
+        .social-icon {
+            background: transparent;
+            width: 60px; height: 60px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.2rem;
+            color: #87CEEB;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.7);
+            transition: all 0.25s ease;
+            text-decoration: none;
+            border: 1.5px solid rgba(135, 206, 235, 0.9);
+            cursor: pointer;
+        }
+        .social-icon:hover {
+            background: rgba(135, 206, 235, 0.2);
+            color: #ffffff;
+            transform: translateY(-5px);
+            border-color: #4A90E2;
+        }
+
+        /* Info Badge */
+        .info-badge {
+            background: transparent;
+            border-radius: 40px;
+            padding: 1rem 1.2rem;
+            margin: 1.8rem 0 1rem;
+            text-align: center;
+            border: 1.5px solid rgba(135, 206, 235, 0.9);
+        }
+        .info-badge p {
+            font-size: 0.85rem;
+            color: #D6F0FF;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            font-weight: 500;
+            margin: 4px 0;
+        }
+        .info-badge i {
+            color: #87CEEB;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.7);
+        }
+
+        /* Footer */
+        .footer-note {
+            text-align: center;
+            margin-top: 1.6rem;
+            font-size: 0.7rem;
+            color: #B8E1FC;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.7);
+            border-top: 1px solid rgba(135, 206, 235, 0.3);
+            padding-top: 1.2rem;
+            font-weight: 400;
+        }
+
+        /* Music Control */
+        .music-control {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: transparent;
+            padding: 8px 18px;
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            z-index: 999;
+            border: 1.5px solid rgba(135, 206, 235, 0.9);
+            font-size: 0.85rem;
+        }
+        .music-control button {
+            background: #4A90E2;
+            border: none;
+            color: white;
+            font-size: 0.85rem;
+            padding: 5px 14px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.2s;
+            font-family: 'Inter', sans-serif;
+        }
+        .music-control button:hover {
+            background: #87CEEB;
+            color: #1e2a36;
+            transform: scale(1.02);
+        }
+        .music-status {
+            font-weight: 500;
+            color: #B8E1FC;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.7);
+            font-size: 0.8rem;
+        }
+
+        /* ================= MODAL MUSIK ================= */
+        .music-modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.75);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.4s ease, visibility 0.4s;
+        }
+        .music-modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        .music-modal {
+            background: rgba(12, 25, 40, 0.95);
+            border: 1.5px solid rgba(135, 206, 235, 0.9);
+            border-radius: 28px;
+            padding: 2.2rem 1.8rem 2rem;
+            max-width: 380px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6),
+                        0 0 40px rgba(74, 144, 226, 0.3);
+            transform: translateY(20px) scale(0.95);
+            transition: transform 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            position: relative;
+        }
+        .music-modal-overlay.show .music-modal {
+            transform: translateY(0) scale(1);
+        }
+        .music-modal-icon {
+            width: 80px; height: 80px;
+            margin: 0 auto 1.2rem;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #87CEEB, #4A90E2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.4rem;
+            color: #fff;
+            box-shadow: 0 8px 24px rgba(74, 144, 226, 0.5);
+            animation: musicBounce 1.8s infinite;
+        }
+        @keyframes musicBounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-6px); }
+        }
+        .music-modal h2 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: #E8F4FD;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.3px;
+        }
+        .music-modal p {
+            font-size: 0.88rem;
+            color: #B8E1FC;
+            line-height: 1.55;
+            margin-bottom: 1.6rem;
+            font-weight: 400;
+        }
+        .music-modal-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 0.7rem;
+        }
+        .music-modal-btn {
+            border: none;
+            padding: 0.85rem 1.2rem;
+            border-radius: 40px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.22s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .music-modal-btn.primary {
+            background: linear-gradient(135deg, #87CEEB, #4A90E2);
+            color: #0f2027;
+            box-shadow: 0 6px 18px rgba(74, 144, 226, 0.45);
+        }
+        .music-modal-btn.primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(74, 144, 226, 0.65);
+        }
+        .music-modal-btn.secondary {
+            background: transparent;
+            color: #B8E1FC;
+            border: 1.5px solid rgba(135, 206, 235, 0.9);
+        }
+        .music-modal-btn.secondary:hover {
+            background: rgba(135, 206, 235, 0.15);
+            color: #E8F4FD;
+        }
+        .music-modal-btn:active { transform: scale(0.97); }
+
+        /* ================= QRIS PANEL ================= */
+        .qris-panel {
+            background: transparent;
+            border: 1.5px solid rgba(135, 206, 235, 0.9);
+            border-radius: 32px;
+            padding: 1.6rem 1.2rem 1.4rem;
+            margin: 0.6rem 0 1.4rem;
+            text-align: center;
+            display: none;
+            animation: qrisSlideIn 0.4s ease;
+        }
+        .qris-panel.active { display: block; }
+        @keyframes qrisSlideIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .qris-title-top {
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 700;
+            letter-spacing: 3px;
+            color: #E8F4FD;
+            text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+            margin-bottom: 1.2rem;
+            text-transform: uppercase;
+        }
+
+        /* QRIS diam anteng di tengah - ukuran besar */
+        .qris-image-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.2rem;
+            width: 260px;
+            height: 260px;
+            position: relative;
+        }
+        .qris-image {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 18px;
+            background: #ffffff;
+            padding: 10px;
+            box-shadow: 0 10px 32px rgba(0, 0, 0, 0.55),
+                        0 0 36px rgba(135, 206, 235, 0.5);
+            border: 1.5px solid rgba(135, 206, 235, 0.85);
+        }
+
+        .qris-title-bottom {
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: #B8E1FC;
+            text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+            text-transform: uppercase;
+            margin-top: 0.4rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .container { padding: 1.5rem 1.2rem; }
+            .avatar { width: 100px; height: 100px; }
+            .store-name { font-size: 1.65rem; }
+            .social-icon { width: 52px; height: 52px; font-size: 1.9rem; }
+            .social-grid { gap: 2rem; }
+            .link-card { padding: 0.7rem 1.2rem; }
+            .link-card i:first-child { font-size: 1.3rem; width: 32px; }
+            .music-control { bottom: 18px; right: 18px; padding: 6px 14px; gap: 10px; }
+            .music-modal { padding: 1.8rem 1.4rem; }
+            .music-modal-icon { width: 68px; height: 68px; font-size: 2rem; }
+            .qris-image-wrapper { width: 220px; height: 220px; }
+            .qris-title-top { font-size: 0.85rem; letter-spacing: 2px; }
+            .qris-title-bottom { font-size: 0.72rem; letter-spacing: 1.5px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- MODAL PERINGATAN MUSIK -->
+<div class="music-modal-overlay" id="musicModal">
+    <div class="music-modal">
+        <div class="music-modal-icon">
+            <i class="fas fa-music"></i>
+        </div>
+        <h2>🙏🏻 SELAMAT DATANG 🙏🏻</h2>
+        <p>silahkan nyalakan musik pengiring saat buka halaman ini.</p>
+        <div class="music-modal-buttons">
+            <button class="music-modal-btn primary" id="modalPlayMusic">
+                <i class="fas fa-play"></i> Nyalakan Musik
+            </button>
+            <button class="music-modal-btn secondary" id="modalSkipMusic">
+                <i class="fas fa-volume-mute"></i> Lewati Saja
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- VIDEO BACKGROUND -->
+<video id="bgVideo" class="video-background" autoplay loop muted playsinline preload="metadata"></video>
+
+<!-- MUSIK -->
+<audio id="bgMusic" loop preload="none"></audio>
+
+<div class="container">
+    <!-- Profile -->
+    <div class="profile">
+        <a href="#" id="logoLink" class="avatar-link" target="_blank" rel="noopener">
+            <img id="storeLogo" class="avatar" src="https://files.catbox.moe/2qmrw0.png" alt="Logo Payment Merta">
+        </a>
+        <div class="store-name">PAYMENT MERTA</div>
+        <div class="bio">💳 SILAHKAN PILIH QRIS 💳</div>
+    </div>
+
+    <!-- Tombol 1 & 2 -->
+    <div class="links">
+        <div class="link-card" id="btnQrisMerchant">
+            <i class="fas fa-qrcode"></i>
+            <span class="link-label">QRIS GOPAY</span>
+            <i class="fas fa-chevron-right link-arrow"></i>
+        </div>
+
+        <!-- Panel QRIS Merchant -->
+        <div class="qris-panel" id="panelQrisMerchant">
+            <div class="qris-title-top">SCAN IN HERE</div>
+            <div class="qris-image-wrapper">
+                <img class="qris-image" id="qrisMerchantImg" src="" alt="QRIS Merchant">
+            </div>
+            <div class="qris-title-bottom">KIRIM BUKTI TRANSFER KE MERTA</div>
+        </div>
+
+        <div class="link-card" id="btnQrisDana">
+            <i class="fas fa-wallet"></i>
+            <span class="link-label">QRIS DANA</span>
+            <i class="fas fa-chevron-right link-arrow"></i>
+        </div>
+
+        <!-- Panel QRIS Dana Bisnis -->
+        <div class="qris-panel" id="panelQrisDana">
+            <div class="qris-title-top">SCAN IN HERE</div>
+            <div class="qris-image-wrapper">
+                <img class="qris-image" id="qrisDanaImg" src="" alt="QRIS DANA Bisnis">
+            </div>
+            <div class="qris-title-bottom">KIRIM BUKTI TRANSFER KE MERTA</div>
+        </div>
+    </div>
+
+    <!-- Info -->
+    <div class="info-badge">
+        <p><i class="fas fa-clock"></i> BUKA 15.30 - 22.00 WIB</p>
+        <p><i class="fas fa-shield-halved"></i> Pembayaran Aman & Terverifikasi</p>
+    </div>
+    <div class="footer-note">
+        © 2025 MERTA STORE CASSANO
+    </div>
+</div>
+
+<!-- Music Control -->
+<div class="music-control">
+    <i class="fas fa-headphones" style="color:#87CEEB; text-shadow: 0 1px 3px rgba(0,0,0,0.7);"></i>
+    <span class="music-status" id="musicStatusText">Musik OFF</span>
+    <button id="toggleMusicBtn" type="button">ON</button>
+</div>
+
+<script>
+/* ======================= KONFIGURASI ======================= */
+const CONFIG = {
+    VIDEO_URL: "https://files.catbox.moe/ert8du.mp4",
+    MUSIC_URL: "https://files.catbox.moe/htdiv1.mp3",
+    LOGO_IMAGE_URL: "https://files.catbox.moe/2qmrw0.png",
+    LOGO_CLICK_URL: "https://linktr.ee/mertastore22",
+    CLICK_SOUND_URL: "https://files.catbox.moe/8x0m26.mp3",
+    POSTER_URL: "",
+
+    // ============ GANTI FOTO QRIS DI SINI ============
+    QRIS_MERCHANT_IMG: "https://files.catbox.moe/2jc7o5.jpg",   // ← Foto QRIS Merchant
+    QRIS_DANA_IMG:     "https://files.catbox.moe/3hb2o6.jpg"    // ← Foto QRIS Dana Bisnis
+    // =================================================
+};
+/* =========================================================== */
+
+/* ================== FADE-IN HALAMAN ================== */
+window.addEventListener('load', () => {
+    document.body.classList.add('loaded');
+});
+
+/* ================== DETEKSI KONEKSI LAMBAT ================== */
+const isSlowConnection = (() => {
+    const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+    if (!conn) return false;
+    if (conn.saveData) return true;
+    return ['slow-2g', '2g'].includes(conn.effectiveType);
+})();
+
+const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ================== SETUP VIDEO ================== */
+const videoElement = document.getElementById('bgVideo');
+function setupVideo() {
+    if (!videoElement) return;
+    if (isSlowConnection || prefersReducedMotion) {
+        videoElement.remove();
+        document.body.style.background = 'linear-gradient(135deg, #0f2027, #203a43, #2c5364)';
+        return;
+    }
+    videoElement.src = CONFIG.VIDEO_URL;
+    if (CONFIG.POSTER_URL) videoElement.poster = CONFIG.POSTER_URL;
+    videoElement.muted = true;
+    videoElement.setAttribute('playsinline', 'true');
+    videoElement.load();
+
+    const tryPlayVideo = () => {
+        videoElement.play().catch(err => {
+            console.warn("Video autoplay ditunda:", err.message);
+            const retryOnce = () => {
+                videoElement.play().catch(() => {});
+                document.body.removeEventListener('click', retryOnce);
+                document.body.removeEventListener('touchstart', retryOnce);
+            };
+            document.body.addEventListener('click', retryOnce, { once: true });
+            document.body.addEventListener('touchstart', retryOnce, { once: true });
+        });
+    };
+    if (videoElement.readyState >= 2) tryPlayVideo();
+    else {
+        videoElement.addEventListener('canplaythrough', tryPlayVideo, { once: true });
+        setTimeout(tryPlayVideo, 700);
+    }
+    videoElement.addEventListener('error', () => {
+        document.body.style.background = 'linear-gradient(135deg, #0f2027, #203a43, #2c5364)';
+        videoElement.remove();
+    });
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden) videoElement.pause();
+        else if (videoElement.readyState > 0) videoElement.play().catch(() => {});
+    });
+}
+
+/* ================== SETUP MUSIK ================== */
+const musicPlayer = document.getElementById('bgMusic');
+const toggleBtn = document.getElementById('toggleMusicBtn');
+const musicStatusSpan = document.getElementById('musicStatusText');
+let isMusicPlaying = false;
+
+function setupMusic() {
+    if (!musicPlayer) return;
+    musicPlayer.src = CONFIG.MUSIC_URL;
+    musicPlayer.volume = 0.55;
+    musicPlayer.load();
+
+    musicPlayer.addEventListener('play', () => {
+        isMusicPlaying = true;
+        updateMusicUI(true);
+    });
+    musicPlayer.addEventListener('pause', () => {
+        isMusicPlaying = false;
+        updateMusicUI(false);
+    });
+    musicPlayer.addEventListener('error', () => {
+        musicStatusSpan.textContent = "Musik error";
+    });
+}
+function updateMusicUI(playing) {
+    if (playing) {
+        musicStatusSpan.textContent = "Musik ON";
+        toggleBtn.textContent = "OFF";
+    } else {
+        musicStatusSpan.textContent = "Musik OFF";
+        toggleBtn.textContent = "ON";
+    }
+}
+function playMusic() {
+    if (!musicPlayer) return;
+    musicPlayer.play().then(() => {
+        isMusicPlaying = true;
+    }).catch(err => {
+        console.warn("Musik butuh interaksi user:", err.message);
+        updateMusicUI(false);
+    });
+}
+function pauseMusic() {
+    if (!musicPlayer) return;
+    musicPlayer.pause();
+}
+
+/* ================== MODAL PERINGATAN MUSIK ================== */
+const musicModal = document.getElementById('musicModal');
+const btnPlayMusic = document.getElementById('modalPlayMusic');
+const btnSkipMusic = document.getElementById('modalSkipMusic');
+function showMusicModal() { musicModal.classList.add('show'); }
+function hideMusicModal() { musicModal.classList.remove('show'); }
+
+btnPlayMusic.addEventListener('click', () => {
+    playMusic();
+    hideMusicModal();
+    playClickSound();
+});
+btnSkipMusic.addEventListener('click', () => {
+    hideMusicModal();
+    updateMusicUI(false);
+    playClickSound();
+});
+
+/* ================== SUARA KLIK ================== */
+function playClickSound() {
+    if (!CONFIG.CLICK_SOUND_URL) return;
+    try {
+        const sound = new Audio(CONFIG.CLICK_SOUND_URL);
+        sound.volume = 0.35;
+        sound.play().catch(() => {});
+    } catch (e) { /* ignore */ }
+}
+
+/* ================== TOGGLE MUSIK ================== */
+toggleBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (isMusicPlaying) pauseMusic();
+    else playMusic();
+    playClickSound();
+});
+
+/* ================== TOGGLE PANEL QRIS ================== */
+const btnQrisMerchant = document.getElementById('btnQrisMerchant');
+const btnQrisDana = document.getElementById('btnQrisDana');
+const panelQrisMerchant = document.getElementById('panelQrisMerchant');
+const panelQrisDana = document.getElementById('panelQrisDana');
+
+document.getElementById('qrisMerchantImg').src = CONFIG.QRIS_MERCHANT_IMG;
+document.getElementById('qrisDanaImg').src = CONFIG.QRIS_DANA_IMG;
+
+btnQrisMerchant.addEventListener('click', () => {
+    playClickSound();
+    const isOpen = panelQrisMerchant.classList.contains('active');
+    panelQrisDana.classList.remove('active');
+    if (isOpen) {
+        panelQrisMerchant.classList.remove('active');
+    } else {
+        panelQrisMerchant.classList.add('active');
+        setTimeout(() => panelQrisMerchant.scrollIntoView({ behavior: 'smooth', block: 'center' }), 150);
+    }
+});
+
+btnQrisDana.addEventListener('click', () => {
+    playClickSound();
+    const isOpen = panelQrisDana.classList.contains('active');
+    panelQrisMerchant.classList.remove('active');
+    if (isOpen) {
+        panelQrisDana.classList.remove('active');
+    } else {
+        panelQrisDana.classList.add('active');
+        setTimeout(() => panelQrisDana.scrollIntoView({ behavior: 'smooth', block: 'center' }), 150);
+    }
+});
+
+/* ================== SUARA KLIK UNTUK LINK LAIN ================== */
+document.querySelectorAll('.social-icon[href]').forEach(el => {
+    el.addEventListener('click', () => playClickSound());
+});
+
+/* ================== LOGO ================== */
+const logoImg = document.getElementById('storeLogo');
+logoImg.src = CONFIG.LOGO_IMAGE_URL;
+const logoLinkElem = document.getElementById('logoLink');
+logoLinkElem.href = CONFIG.LOGO_CLICK_URL;
+logoLinkElem.addEventListener('click', () => playClickSound());
+
+/* ================== INIT ================== */
+window.addEventListener('DOMContentLoaded', () => {
+    setupVideo();
+    setupMusic();
+    setTimeout(() => showMusicModal(), 500);
+});
+
+/* ================== FALLBACK INTERAKSI PERTAMA ================== */
+document.body.addEventListener('click', function firstInteraction() {
+    if (!isMusicPlaying && !musicModal.classList.contains('show')) {
+        playMusic();
+    }
+    document.body.removeEventListener('click', firstInteraction);
+}, { once: true });
+
+console.log("✅ PAYMENT MERTA - QRIS diam ukuran besar, tanpa efek meledak.");
+</script>
+</body>
+</html>
